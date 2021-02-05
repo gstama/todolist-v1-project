@@ -8,6 +8,7 @@ app.set('view engine', 'ejs');
 
 var today = new Date();
 const items = [];
+const workItems = [];
 
 app.get('/', (req, res, next) => {
   let options = {
@@ -19,14 +20,32 @@ app.get('/', (req, res, next) => {
   let day = today.toLocaleDateString('en-US', options);
 
   res.render('list', {
-    day: day,
+    listTitle: day,
     items: items,
   });
 });
 
 app.post('/', (req, res, next) => {
-  items.push(req.body.newItem);
-  res.redirect('/');
+  if (req.body.list === 'Work List') {
+    workItems.push(req.body.newItem);
+    res.redirect('/work');
+  } else {
+    items.push(req.body.newItem);
+    res.redirect('/');
+  }
+});
+
+app.get('/work', (req, res, next) => {
+  res.render('list', { listTitle: 'Work List', items: workItems });
+});
+
+app.post('/work', (req, res, next) => {
+  workItems.push(req.body.newItem);
+  res.redirect('/work');
+});
+
+app.get('/about', (req, res, next) => {
+  res.render('about');
 });
 
 app.listen(3000, () => {

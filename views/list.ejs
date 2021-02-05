@@ -1,41 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>To Do List</title>
+<%- include("header") -%>
+<div class="box" id="heading">
+  <h1><%= listTitle %></h1>
+</div>
 
-    <!-- Google fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
-      rel="stylesheet"
+<div class="box">
+  <% for (const item of items) { %>
+  <div class="item">
+    <input type="checkbox" />
+    <p><%= item %></p>
+  </div>
+  <% } %>
+  <form class="item" action="/" method="post">
+    <input
+      type="text"
+      name="newItem"
+      placeholder="New Item"
+      autocomplete="off"
     />
-    <!-- CSS local -->
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-
-  <body>
-    <div class="box" id="heading">
-      <h1><%= day %></h1>
-    </div>
-
-    <div class="box">
-      <% for (const item of items) { %>
-      <div class="item">
-        <input type="checkbox" />
-        <p><%= item %></p>
-      </div>
-      <% } %>
-      <form class="item" action="/" method="post">
-        <input
-          type="text"
-          name="newItem"
-          placeholder="New Item"
-          autocomplete="off"
-        />
-        <button type="submit" name="button">+</button>
-      </form>
-    </div>
-  </body>
-</html>
+    <button type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+<%- include("footer") -%>
