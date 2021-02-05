@@ -4,19 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do List</title>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <!-- CSS local -->
+    <link rel="stylesheet" href="css/style.css" />
   </head>
 
   <body>
-    <h1><%= day %></h1>
+    <div class="box" id="heading">
+      <h1><%= day %></h1>
+    </div>
 
-    <ul>
+    <div class="box">
       <% for (const item of items) { %>
-      <li><%= item %></li>
+      <div class="item">
+        <input type="checkbox" />
+        <p><%= item %></p>
+      </div>
       <% } %>
-    </ul>
-    <form action="/" method="post">
-      <input type="text" name="newItem" placeholder="New Item" />
-      <button type="submit" name="button">Add</button>
-    </form>
+      <form class="item" action="/" method="post">
+        <input
+          type="text"
+          name="newItem"
+          placeholder="New Item"
+          autocomplete="off"
+        />
+        <button type="submit" name="button">+</button>
+      </form>
+    </div>
   </body>
 </html>
