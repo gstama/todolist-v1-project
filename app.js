@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 
 const date = require(__dirname + '/util/date.js');
-const config = require(__dirname + '/config.js');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
