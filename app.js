@@ -12,6 +12,7 @@ app.set('view engine', 'ejs');
 mongoose.connect(config.mongoConnectURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 const itemsSchema = new mongoose.Schema({
@@ -68,25 +69,52 @@ app.post('/', (req, res, next) => {
   const item = new Item({
     name: req.body.newItem,
   });
-  item.save((err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Successfully added new item.');
-    }
-  });
-  res.redirect('/');
+
+  if (req.body.list === date.getDate()) {
+    item.save((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Successfully added new item.');
+      }
+    });
+    res.redirect('/');
+  } else {
+    List.findOne({ name: req.body.list }, (err, foundList) => {
+      foundList.items.push(item);
+      foundList.save((err) => {
+        if (err) {
+          console.log(err);
+        }
+        res.redirect('/' + foundList.name);
+      });
+    });
+  }
 });
 
 app.post('/delete', (req, res, next) => {
-  Item.findByIdAndRemove(req.body.checkbox.trim(), (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Deletion Successful');
-      res.redirect('/');
-    }
-  });
+  if (req.body.listName === date.getDate()) {
+    Item.findByIdAndRemove(req.body.checkbox.trim(), (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Deletion Successful');
+        res.redirect('/');
+      }
+    });
+  } else {
+    List.findOneAndUpdate(
+      { name: req.body.listName },
+      { $pull: { items: { _id: req.body.checkbox.trim() } } },
+      (err, foundList) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.redirect('/' + req.body.listName);
+        }
+      }
+    );
+  }
 });
 
 app.get('/:customListName', (req, res, next) => {
