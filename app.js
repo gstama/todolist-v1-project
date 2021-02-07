@@ -76,6 +76,17 @@ app.post('/', (req, res, next) => {
   }
 });
 
+app.post('/delete', (req, res, next) => {
+  Item.findByIdAndRemove(req.body.checkbox.trim(), (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Deletion Successful');
+      res.redirect('/');
+    }
+  });
+});
+
 app.get('/work', (req, res, next) => {
   res.render('list', { listTitle: 'Work List', items: workItems });
 });
