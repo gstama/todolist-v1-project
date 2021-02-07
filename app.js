@@ -18,7 +18,26 @@ const itemsSchema = new mongoose.Schema({
   name: String,
 });
 
+const listSchema = new mongoose.Schema({
+  name: String,
+  items: [itemsSchema],
+});
+
 const Item = mongoose.model('Item', itemsSchema);
+
+const List = mongoose.model('List', listSchema);
+
+const defaultItem1 = new Item({
+  name: 'Welcome to your todo list!',
+});
+const defaultItem2 = new Item({
+  name: 'Hit the + button to add a new item.',
+});
+const defaultItem3 = new Item({
+  name: '<-- Hit this to delete an item.',
+});
+
+const defaultItems = [defaultItem1, defaultItem2, defaultItem3];
 
 app.get('/', (req, res, next) => {
   let day = date.getDate();
@@ -28,18 +47,6 @@ app.get('/', (req, res, next) => {
       console.log(err);
     } else {
       if (items.length === 0) {
-        const defaultItem1 = new Item({
-          name: 'Welcome to your todo list!',
-        });
-        const defaultItem2 = new Item({
-          name: 'Hit the + button to add a new item.',
-        });
-        const defaultItem3 = new Item({
-          name: '<-- Hit this to delete an item.',
-        });
-
-        const defaultItems = [defaultItem1, defaultItem2, defaultItem3];
-
         Item.insertMany(defaultItems, (err) => {
           if (err) {
             console.log(err);
@@ -58,22 +65,17 @@ app.get('/', (req, res, next) => {
 });
 
 app.post('/', (req, res, next) => {
-  if (req.body.list === 'Work List') {
-    workItems.push(req.body.newItem);
-    res.redirect('/work');
-  } else {
-    const item = new Item({
-      name: req.body.newItem,
-    });
-    item.save((err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Successfully added new item.');
-      }
-    });
-    res.redirect('/');
-  }
+  const item = new Item({
+    name: req.body.newItem,
+  });
+  item.save((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Successfully added new item.');
+    }
+  });
+  res.redirect('/');
 });
 
 app.post('/delete', (req, res, next) => {
@@ -87,8 +89,37 @@ app.post('/delete', (req, res, next) => {
   });
 });
 
-app.get('/work', (req, res, next) => {
-  res.render('list', { listTitle: 'Work List', items: workItems });
+app.get('/:customListName', (req, res, next) => {
+  const list = new List({
+    name: req.params.customListName,
+    items: defaultItems,
+  });
+  List.findOne({ name: req.params.customListName }, (err, foundList) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundList) {
+        console.log(
+          'List with the name: ' +
+            req.params.customListName +
+            ' already exists!'
+        );
+        res.render('list', {
+          listTitle: foundList.name,
+          items: foundList.items,
+        });
+      } else {
+        list.save((err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('Custom list created!');
+          }
+        });
+        res.redirect('/' + req.params.customListName);
+      }
+    }
+  });
 });
 
 app.post('/work', (req, res, next) => {
