@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-mongoose.connect(config.mongoConnectURI, {
+mongoose.connect(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
