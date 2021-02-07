@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const _ = require('lodash');
+
 const date = require(__dirname + '/util/date.js');
 const config = require(__dirname + '/config.js');
 
@@ -118,19 +120,18 @@ app.post('/delete', (req, res, next) => {
 });
 
 app.get('/:customListName', (req, res, next) => {
+  const customListName = _.capitalize(req.params.customListName);
   const list = new List({
-    name: req.params.customListName,
+    name: customListName,
     items: defaultItems,
   });
-  List.findOne({ name: req.params.customListName }, (err, foundList) => {
+  List.findOne({ name: customListName }, (err, foundList) => {
     if (err) {
       console.log(err);
     } else {
       if (foundList) {
         console.log(
-          'List with the name: ' +
-            req.params.customListName +
-            ' already exists!'
+          'List with the name: ' + customListName + ' already exists!'
         );
         res.render('list', {
           listTitle: foundList.name,
@@ -144,7 +145,7 @@ app.get('/:customListName', (req, res, next) => {
             console.log('Custom list created!');
           }
         });
-        res.redirect('/' + req.params.customListName);
+        res.redirect('/' + customListName);
       }
     }
   });
